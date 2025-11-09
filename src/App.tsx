@@ -1,10 +1,15 @@
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import HomePage from './pages/HomePage'
+import EditorPage from './pages/EditorPage'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Spritly - Sprite Sheet Editor</h1>
-    </div>
+    <BrowserRouter basename="/spritly">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/editor" element={<EditorPage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
