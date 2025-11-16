@@ -10,6 +10,7 @@ function Canvas() {
     const { width, height } = config
 
     useEffect(() => {
+
         const bufferCanvas = bufferCanvasRef.current
         const displayCanvas = displayCanvasRef.current
         const container = containerRef.current
@@ -17,27 +18,37 @@ function Canvas() {
         if (!bufferCanvas || !displayCanvas || !container)
             return
 
-        const pixelSizeWidth = Math.floor(container.clientWidth / width)
-        const pixelSizeHeight = Math.floor(container.clientHeight / height)
-        const pixelSize = Math.min(pixelSizeWidth, pixelSizeHeight)
+        const resizeCanvas = () => {
 
-        bufferCanvas.width = width
-        bufferCanvas.height = height
-        displayCanvas.width = width * pixelSize
-        displayCanvas.height = height * pixelSize
+            const pixelSizeWidth = Math.floor((container.clientWidth - 40) / width)
+            const pixelSizeHeight = Math.floor((container.clientHeight - 40) / height)
+            const pixelSize = Math.min(pixelSizeWidth, pixelSizeHeight)
 
-        const bufferContext = bufferCanvas.getContext('2d')
-        const displayContext = displayCanvas.getContext('2d')
+            bufferCanvas.width =    width
+            bufferCanvas.height = height
+            displayCanvas.width = width * pixelSize
+            displayCanvas.height = height * pixelSize
 
-        if (!bufferContext || !displayContext)
-            return
+            const bufferContext = bufferCanvas.getContext('2d')
+            const displayContext = displayCanvas.getContext('2d')
 
-        displayContext.fillStyle = 'white'
-        displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
+            if (!bufferContext || !displayContext)
+                return
+
+            displayContext.fillStyle = 'white'
+            displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
+        }
+
+        resizeCanvas()
+        window.addEventListener('resize', resizeCanvas)
+
+        return () => {
+            window.removeEventListener('resize', resizeCanvas)
+        }
     }, [width, height])
 
     return (
-        <div className="bg-gray-100 flex-1 flex items-center justify-center" ref={containerRef}>
+        <div className="flex-1 min-w-0 min-h-0bg-gray-100 flex items-center justify-center" ref={containerRef}>
             <canvas ref={bufferCanvasRef} style={{ display: 'none' }} />
             <canvas ref={displayCanvasRef} style={{ border: '1px solid black' }} />
         </div>
