@@ -76,8 +76,6 @@ function Canvas() {
         displayContext.fillStyle = 'white'
         displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
         drawGrid(displayContext, newPixelSize)
-        displayContext.fillStyle = 'black'
-        displayContext.fillRect(20 * newPixelSize, 16 * newPixelSize, newPixelSize, newPixelSize)
     }
 
     useEffect(() => {
