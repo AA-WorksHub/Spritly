@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Project, Frame, Layer, Tool } from '../types'
+import type { Project, Frame, Layer, ToolType } from '../types'
 
 interface ProjectStore extends Project {
   addFrame: () => void
@@ -12,7 +12,7 @@ interface ProjectStore extends Project {
   updateLayer: (id: string, updates: Partial<Layer>) => void
   setCurrentLayer: (index: number) => void
 
-  setTool: (tool: Tool) => void
+  setTool: (tool: ToolType) => void
   setColor: (color: string) => void
 
   updateFrameImageData: (frameIndex: number, layerId: string, imageData: ImageData) => void

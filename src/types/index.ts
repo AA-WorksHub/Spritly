@@ -1,5 +1,5 @@
 // Types des outils de dessin
-export type Tool = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'rectangle'
+export type ToolType = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'rectangle'
 
 // Calque
 export interface Layer {
@@ -31,7 +31,7 @@ export interface Project {
   layers: Layer[]
   currentFrameIndex: number
   currentLayerIndex: number
-  currentTool: Tool
+  currentTool: ToolType
   currentColor: string
   onionSkinning: boolean
 }
