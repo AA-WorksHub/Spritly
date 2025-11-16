@@ -1,5 +1,5 @@
 import { useProjectStore } from '../../store/useProjectStore'
-import {useRef, useEffect } from 'react'
+import {useRef, useEffect} from 'react'
 
 function Canvas() {
 
@@ -37,6 +37,27 @@ function Canvas() {
 
             displayContext.fillStyle = 'white'
             displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
+            drawGrid(displayContext, pixelSize)
+        }
+
+        const drawGrid = (ctx: CanvasRenderingContext2D, pixelSize: number) => {
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)'
+            ctx.lineWidth = 1
+
+            for (let x = 0; x <= width; x++) {
+                const posx = x * pixelSize
+                ctx.beginPath()
+                ctx.moveTo(posx, 0)
+                ctx.lineTo(posx, height * pixelSize)
+                ctx.stroke()
+            }
+            for (let y = 0; y <= height; y++) {
+                const posy = y * pixelSize
+                ctx.beginPath()
+                ctx.moveTo(0, posy)
+                ctx.lineTo(width * pixelSize, posy)
+                ctx.stroke()
+            }
         }
 
         resizeCanvas()
