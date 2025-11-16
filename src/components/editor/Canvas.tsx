@@ -1,11 +1,12 @@
 import { useProjectStore } from '../../store/useProjectStore'
-import {useRef, useEffect} from 'react'
+import { useRef, useEffect, useState } from 'react'
 
 function Canvas() {
 
     const bufferCanvasRef = useRef<HTMLCanvasElement>(null)
     const displayCanvasRef = useRef<HTMLCanvasElement>(null)
     const containerRef = useRef<HTMLDivElement>(null)
+    const [myZoom, setZoom] = useState(1.0)
     const { config } = useProjectStore()
     const { width, height } = config
 
@@ -24,7 +25,7 @@ function Canvas() {
             const pixelSizeHeight = Math.floor((container.clientHeight - 40) / height)
             const pixelSize = Math.min(pixelSizeWidth, pixelSizeHeight)
 
-            bufferCanvas.width =    width
+            bufferCanvas.width = width
             bufferCanvas.height = height
             displayCanvas.width = width * pixelSize
             displayCanvas.height = height * pixelSize
@@ -34,6 +35,9 @@ function Canvas() {
 
             if (!bufferContext || !displayContext)
                 return
+
+            displayContext.setTransform(1, 0, 0, 1, 0, 0)
+            displayContext.scale(myZoom, myZoom)
 
             displayContext.fillStyle = 'white'
             displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
@@ -60,13 +64,27 @@ function Canvas() {
             }
         }
 
+        const handleZoom = (e: WheelEvent) => {
+            e.preventDefault()
+
+            const zoomSpeed = 0.1
+            const delta = e.deltaY > 0 ? -zoomSpeed : zoomSpeed
+
+            setZoom(prev => {
+                const newZoom = prev + delta
+                return Math.max(1.0, Math.min(5.0, newZoom))
+            })
+        }
+
         resizeCanvas()
         window.addEventListener('resize', resizeCanvas)
+        displayCanvas.addEventListener('wheel', handleZoom)
 
         return () => {
             window.removeEventListener('resize', resizeCanvas)
+            displayCanvas.removeEventListener('wheel', handleZoom)
         }
-    }, [width, height])
+    }, [width, height, myZoom])
 
     return (
         <div className="flex-1 min-w-0 min-h-0bg-gray-100 flex items-center justify-center" ref={containerRef}>
