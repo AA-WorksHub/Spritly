@@ -1,7 +1,5 @@
-// Types des outils de dessin
 export type ToolType = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'rectangle'
 
-// Calque
 export interface Layer {
   id: string
   name: string
@@ -9,14 +7,12 @@ export interface Layer {
   opacity: number
 }
 
-// Frame de l'animation
 export interface Frame {
   id: string
   layers: Map<string, ImageData>
   thumbnail?: string
 }
 
-// Configuration du projet
 export interface ProjectConfig {
   width: number
   height: number
@@ -24,7 +20,13 @@ export interface ProjectConfig {
   backgroundColor: string
 }
 
-// État complet du projet
+export interface HistoryState {
+  frames: Frame[]
+  layers: Layer[]
+  currentFrameIndex: number
+  currentLayerIndex: number
+}
+
 export interface Project {
   config: ProjectConfig
   frames: Frame[]
@@ -34,10 +36,7 @@ export interface Project {
   currentTool: ToolType
   currentColor: string
   onionSkinning: boolean
-}
-
-// Historique pour undo/redo
-export interface HistoryState {
-  frames: Frame[]
-  currentFrameIndex: number
+  
+  history: HistoryState[]
+  historyIndex: number
 }

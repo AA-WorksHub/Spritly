@@ -1,8 +1,60 @@
+import { useProjectStore } from '../../store/useProjectStore'
+import type { ToolType } from '../../types'
+import { Pencil, Eraser, PaintBucket, Pipette, Undo2, Redo2 } from 'lucide-react'
+
+const TOOLS: { id: ToolType; label: string; icon: React.ElementType }[] = [
+    { id: 'pencil', label: 'Crayon', icon: Pencil },
+    { id: 'eraser', label: 'Gomme', icon: Eraser },
+    { id: 'bucket', label: 'Remplir', icon: PaintBucket },
+    { id: 'eyedropper', label: 'Pipette', icon: Pipette },
+]
+
 function Toolbar() {
+    const { currentTool, setTool, currentColor, setColor, undo, redo } = useProjectStore()
+
     return (
-      <div className="bg-gray-700 text-white p-4 flex items-center justify-center">
-        Toolbar
-      </div>
+        <div className="w-16 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-4 gap-4 shrink-0 z-10">
+            <div className="flex flex-col gap-2 w-full px-2">
+                {TOOLS.map((t) => {
+                    const Icon = t.icon
+                    return (
+                        <button
+                            key={t.id}
+                            onClick={() => setTool(t.id)}
+                            title={t.label}
+                            className={`aspect-square rounded flex items-center justify-center transition-all ${
+                                currentTool === t.id 
+                                ? 'bg-blue-600 text-white shadow-lg' 
+                                : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                            }`}
+                        >
+                            <Icon size={20} />
+                        </button>
+                    )
+                })}
+            </div>
+
+            <div className="h-px w-8 bg-gray-700 my-2" />
+
+            <div className="relative group flex justify-center">
+                <input 
+                    type="color" 
+                    value={currentColor}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-8 h-8 p-0 border-0 rounded cursor-pointer overflow-hidden"
+                />
+                <div className="absolute inset-0 rounded ring-1 ring-inset ring-white/10 pointer-events-none" />
+            </div>
+
+            <div className="mt-auto flex flex-col gap-2 w-full px-2">
+                <button onClick={undo} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded flex justify-center" title="Undo (Ctrl+Z)">
+                    <Undo2 size={20} />
+                </button>
+                <button onClick={redo} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded flex justify-center" title="Redo (Ctrl+Y)">
+                    <Redo2 size={20} />
+                </button>
+            </div>
+        </div>
     )
 }
 
