@@ -1,5 +1,21 @@
 export type ToolType = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'rectangle'
 
+//details sur l'outil
+export interface Tool {
+  id: ToolType;
+  icon: React.ComponentType<{ size?: number }>;
+  label: string;
+  cursor: string;
+}
+
+//details sur les intéractions avec le canva
+export interface DrawingState {
+  activeTool: ToolType;
+  color: string;
+  brushSize: number;
+}
+
+// Calque
 export interface Layer {
   id: string
   name: string

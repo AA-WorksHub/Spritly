@@ -58,4 +58,4 @@ function Toolbar() {
     )
 }
 
-export default Toolbar
+export default Toolbar;

@@ -1,0 +1,19 @@
+/* ColorPickerModal.css */
+.color-picker-modal .react-colorful {
+  width: 280px;
+  height: 280px;
+}
+
+.color-picker-modal .react-colorful__saturation {
+  border-radius: 8px 8px 0 0;
+}
+
+.color-picker-modal .react-colorful__hue {
+  height: 24px;
+  border-radius: 0 0 8px 8px;
+}
+
+.color-picker-modal .react-colorful__pointer {
+  width: 20px;
+  height: 20px;
+}
