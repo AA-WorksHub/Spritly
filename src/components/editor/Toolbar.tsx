@@ -1,58 +1,61 @@
-import { useState } from 'react';
-import { Palette } from 'lucide-react';
-import { TOOLS } from '../../config/tools.config';
-import type { ToolType } from '../../types/index';
-import { ToolButton } from '../ToolBar/ToolButton';
-import { ColorPickerModal } from '../ToolBar/ColorPickerModal';
+import { useProjectStore } from '../../store/useProjectStore'
+import type { ToolType } from '../../types'
+import { Pencil, Eraser, PaintBucket, Pipette, Undo2, Redo2 } from 'lucide-react'
 
-interface ToolbarProps {
-  activeTool: ToolType;
-  onToolChange: (tool: ToolType) => void;
-  primaryColor: string;
-  secondaryColor: string;
-  onPrimaryColorChange: (color: string) => void;
-  onSecondaryColorChange: (color: string) => void;
-}
+const TOOLS: { id: ToolType; label: string; icon: React.ElementType }[] = [
+    { id: 'pencil', label: 'Crayon', icon: Pencil },
+    { id: 'eraser', label: 'Gomme', icon: Eraser },
+    { id: 'bucket', label: 'Remplir', icon: PaintBucket },
+    { id: 'eyedropper', label: 'Pipette', icon: Pipette },
+]
 
-function Toolbar({
-  activeTool,
-  onToolChange,
-  primaryColor,
-  // secondaryColor,
-  onPrimaryColorChange,
-  // onSecondaryColorChange,
-}: ToolbarProps) {
-  const [isPickerOpen, setIsPickerOpen] = useState(false);
-  return (
-    <div className="bg-slate-800 border-r border-slate-700 w-20 flex flex-col items-center py-4 space-y-4">
-      {/* Outils */}
-      <div className="space-y-1">
-        {TOOLS.map((tool) => (
-          <ToolButton
-            key={tool.id}
-            tool={tool}
-            isActive={activeTool === tool.id}
-            onClick={onToolChange}
-          />
-        ))}
-      </div>
-        <button
-          onClick={() => setIsPickerOpen(true)}
-          className="relative w-12 h-12 rounded-lg border-2 border-slate-600 hover:border-slate-400 transition-all"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <Palette size={16} className="absolute bottom-0 right-0 text-white bg-slate-800 rounded-full p-0.5" />
-        </button>
+function Toolbar() {
+    const { currentTool, setTool, currentColor, setColor, undo, redo } = useProjectStore()
 
-        {/* Modal */}
-        <ColorPickerModal
-          isOpen={isPickerOpen}
-          currentColor={primaryColor}
-          onClose={() => setIsPickerOpen(false)}
-          onColorChange={onPrimaryColorChange}
-        />
-    </div>
-  );
+    return (
+        <div className="w-16 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-4 gap-4 shrink-0 z-10">
+            <div className="flex flex-col gap-2 w-full px-2">
+                {TOOLS.map((t) => {
+                    const Icon = t.icon
+                    return (
+                        <button
+                            key={t.id}
+                            onClick={() => setTool(t.id)}
+                            title={t.label}
+                            className={`aspect-square rounded flex items-center justify-center transition-all ${
+                                currentTool === t.id 
+                                ? 'bg-blue-600 text-white shadow-lg' 
+                                : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                            }`}
+                        >
+                            <Icon size={20} />
+                        </button>
+                    )
+                })}
+            </div>
+
+            <div className="h-px w-8 bg-gray-700 my-2" />
+
+            <div className="relative group flex justify-center">
+                <input 
+                    type="color" 
+                    value={currentColor}
+                    onChange={(e) => setColor(e.target.value)}
+                    className="w-8 h-8 p-0 border-0 rounded cursor-pointer overflow-hidden"
+                />
+                <div className="absolute inset-0 rounded ring-1 ring-inset ring-white/10 pointer-events-none" />
+            </div>
+
+            <div className="mt-auto flex flex-col gap-2 w-full px-2">
+                <button onClick={undo} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded flex justify-center" title="Undo (Ctrl+Z)">
+                    <Undo2 size={20} />
+                </button>
+                <button onClick={redo} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded flex justify-center" title="Redo (Ctrl+Y)">
+                    <Redo2 size={20} />
+                </button>
+            </div>
+        </div>
+    )
 }
 
 export default Toolbar;
