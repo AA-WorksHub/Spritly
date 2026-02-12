@@ -43,9 +43,8 @@ function Toolbar() {
                 onClick={() => setIsPickerOpen(true)}
                 className="relative w-10 h-10 rounded border-2 border-gray-600 hover:border-gray-400 transition-all shadow-lg hover:scale-105"
                 style={{ backgroundColor: currentColor }}
-                title="Choisir une couleur"
+                title="Pick a color"
             />
-
             <ColorPickerModal
                 isOpen={isPickerOpen}
                 currentColor={currentColor}
