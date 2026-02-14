@@ -2,7 +2,7 @@ import { useProjectStore } from '../../store/useProjectStore'
 import type { ToolType } from '../../types'
 import { useState } from 'react';
 import { ColorPickerModal } from '../ToolBar/ColorPickerModal';
-import { Pencil, Eraser, PaintBucket, Pipette, Undo2, Redo2, Slash } from 'lucide-react'
+import { Pencil, Eraser, PaintBucket, Pipette, Undo2, Redo2, Slash, Square, Circle } from 'lucide-react'
 
 const TOOLS: { id: ToolType; label: string; icon: React.ElementType }[] = [
     { id: 'pencil', label: 'Crayon', icon: Pencil },
@@ -10,6 +10,8 @@ const TOOLS: { id: ToolType; label: string; icon: React.ElementType }[] = [
     { id: 'bucket', label: 'Remplir', icon: PaintBucket },
     { id: 'eyedropper', label: 'Pipette', icon: Pipette },
     { id: 'line', label: 'Ligne', icon:Slash},
+    { id: 'square', label: 'Square', icon:Square},
+    { id: 'circle', label: 'Circle', icon:Circle}
 ]
 
 function Toolbar() {

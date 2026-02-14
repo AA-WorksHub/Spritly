@@ -1,4 +1,4 @@
-export type ToolType = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'rectangle'
+export type ToolType = 'pencil' | 'eraser' | 'bucket' | 'eyedropper' | 'line' | 'square' | 'circle'
 
 //details sur l'outil
 export interface Tool {
