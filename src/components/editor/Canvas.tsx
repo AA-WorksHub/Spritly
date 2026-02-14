@@ -96,6 +96,14 @@ function Canvas() {
                 setColor(color)
             },
 
+            getSnapshot: () => {
+                return new Uint8ClampedArray(imageData.data);
+            },
+
+            restoreSnapshot: (snapshot: Uint8ClampedArray) => {
+                imageData.data.set(snapshot);
+            },
+
             refresh: () => {
                 renderCanvas(pixelSize)
             }

@@ -7,5 +7,5 @@ export const TOOLS: Tool[] = [
   { id: 'bucket', icon: Paintbrush, label: 'Seau', cursor: 'crosshair' },
   { id: 'rectangle', icon: Square, label: 'Rectangle', cursor: 'crosshair' },
   { id: 'eyedropper', icon: Pipette, label: 'Pipette', cursor: 'copy' },
-  { id: 'line', icon: Slash, label: 'line', cursor: 'crosshair'},
+  { id: 'line', icon: Slash, label: 'Ligne', cursor: 'crosshair'},
 ];

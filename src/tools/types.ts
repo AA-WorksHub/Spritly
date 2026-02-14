@@ -8,6 +8,8 @@ export interface ToolContext {
     setCurrentColor: (color: string) => void
     refresh: () => void
     saveState: () => void
+    getSnapshot: () => Uint8ClampedArray;
+    restoreSnapshot: (snapshot: Uint8ClampedArray) => void;
 }
 
 export interface Tool {

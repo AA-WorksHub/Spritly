@@ -4,13 +4,14 @@ import { pencilTool } from './pencil'
 import { eraseTool } from './eraser'
 import { eyedropperTool } from './eyedropper'
 import { bucketTool } from './bucket'
+import { lineTool } from './line'
 
 export const tools: Record<ToolType, Tool> = {
     pencil: pencilTool,
     eraser: eraseTool,
     bucket: bucketTool,
     eyedropper: eyedropperTool,
-    line: pencilTool,
+    line: lineTool,
     rectangle: pencilTool
 }
 
