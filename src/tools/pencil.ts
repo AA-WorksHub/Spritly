@@ -11,7 +11,6 @@ const drawLineBetween = (x0: number, y0: number, x1: number, y1: number, color: 
 
     while (true) {
         context.drawPixel(x0, y0, color);
-
         if (x0 === x1 && y0 === y1)
             break;
         const e2 = 2 * err;
@@ -29,7 +28,7 @@ const drawLineBetween = (x0: number, y0: number, x1: number, y1: number, color: 
 export const pencilTool: Tool = {
     onMouseDown(x: number, y: number, context: ToolContext) {
         const color = context.getCurrentColor();
-        context.drawPixel(x, y, color); 
+        context.drawPixel(x, y, color);
         lastPos = { x, y };
         context.refresh();
     },
