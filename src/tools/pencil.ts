@@ -10,7 +10,12 @@ const drawLineBetween = (x0: number, y0: number, x1: number, y1: number, color: 
     let err = dx - dy;
 
     while (true) {
+        /* if (canvas mouseToCanvas === null) {
+            break;
+            } */
+        /* Ça va permettre d'empêcher que l'algorithme du trait continue à calculer une fois que la souris est sortie du canva */
         context.drawPixel(x0, y0, color);
+        console.log(x0, x1, y0, y1);
         if (x0 === x1 && y0 === y1)
             break;
         const e2 = 2 * err;
@@ -48,5 +53,9 @@ export const pencilTool: Tool = {
         lastPos = null;
         context.saveState();
         // historique ?
+    },
+
+    onMouseLeave() {
+        lastPos = null;
     }
 }

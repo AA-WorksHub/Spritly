@@ -149,14 +149,24 @@ function Canvas() {
             tool.onMouseUp(coords.x, coords.y, context)
         }
 
+        const handleMouseLeave = () => {
+            const tool = getTool(currentTool)
+            if (tool.onMouseLeave) {
+                 const context = createToolContext()
+                 tool.onMouseLeave(context)
+            }
+        }
+
         displayCanvas.addEventListener('mousedown', handleMouseDown)
         displayCanvas.addEventListener('mousemove', handleMouseMove)
         displayCanvas.addEventListener('mouseup', handleMouseUp)
+        displayCanvas.addEventListener('mouseleave', handleMouseLeave)
 
         return () => {
             displayCanvas.removeEventListener('mousedown', handleMouseDown)
             displayCanvas.removeEventListener('mousemove', handleMouseMove)
             displayCanvas.removeEventListener('mouseup', handleMouseUp)
+            displayCanvas.removeEventListener('mouseleave', handleMouseLeave)
         }
     }, [isDrawing, currentTool, currentColor, currentFrameIndex, currentLayerIndex, pixelSize, myZoom, mousePos])
 

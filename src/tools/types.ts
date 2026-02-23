@@ -16,4 +16,5 @@ export interface Tool {
     onMouseDown: (x: number, y: number, context: ToolContext) => void
     onMouseMove: (x: number, y: number, context: ToolContext) => void
     onMouseUp: (x: number, y: number, context: ToolContext) => void
+    onMouseLeave?: (context: ToolContext) => void
 }
