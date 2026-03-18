@@ -46,5 +46,10 @@ export const squareTool: Tool = {
         context.saveState();
         startPos = null;
         canvasSnapshot = null;
+    },
+
+    onMouseLeave() {
+        // trouver un moyen de gérer comment fix le rectangle quang on sort du canva avec la souris qui déssine le rectangle
+        startPos = null;
     }
 }

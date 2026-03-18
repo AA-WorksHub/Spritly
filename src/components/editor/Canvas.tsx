@@ -31,8 +31,8 @@ function Canvas() {
         const pixelX = Math.floor(x / pixelSize)
         const pixelY = Math.floor(y / pixelSize)
 
-        if (pixelX < 0 || pixelX >= width || pixelY < 0 || pixelY >= height)
-            return null
+        // if (pixelX < 0 || pixelX >= width || pixelY < 0 || pixelY >= height)
+        //     return null
 
         return { x: pixelX, y: pixelY }
     }
@@ -41,84 +41,77 @@ function Canvas() {
         const currentFrame = frames[currentFrameIndex]
         const currentLayer = layers[currentLayerIndex]
 
-        if (!currentFrame || !currentLayer)
-            throw new Error('No current frame or layer')
+        if (!currentFrame || !currentLayer) throw new Error('No current frame or layer')
 
         const imageData = currentFrame.layers.get(currentLayer.id)
-
-        if (!imageData)
-            throw new Error('No image data for current layer')
+        if (!imageData) throw new Error('No image data for current layer')
 
         return {
             drawPixel: (x: number, y: number, color: string) => {
+                if (x < 0 || x >= width || y < 0 || y >= height) return;
                 const hex = color.replace('#', '')
                 const r = parseInt(hex.substring(0, 2), 16)
                 const g = parseInt(hex.substring(2, 4), 16)
                 const b = parseInt(hex.substring(4, 6), 16)
-                const a = 255
-
+                
                 const index = (y * width + x) * 4
                 imageData.data[index] = r
                 imageData.data[index + 1] = g
                 imageData.data[index + 2] = b
-                imageData.data[index + 3] = a
+                imageData.data[index + 3] = 255
 
+                // ASTUCE OPTIMISATION : Tu peux commenter la ligne ci-dessous si ton dessin lag trop. 
+                // Le refresh() et le saveState() s'occuperont de mettre à jour visuellement !
                 updateFrameImageData(currentFrameIndex, currentLayer.id, imageData)
             },
 
             erasePixel: (x: number, y: number) => {
+                if (x < 0 || x >= width || y < 0 || y >= height) return;
                 const index = (y * width + x) * 4
                 imageData.data[index] = 0
                 imageData.data[index + 1] = 0
                 imageData.data[index + 2] = 0
                 imageData.data[index + 3] = 0
-
                 updateFrameImageData(currentFrameIndex, currentLayer.id, imageData)
             },
 
             getPixelColor: (x: number, y: number) => {
+                if (x < 0 || x >= width || y < 0 || y >= height) return null;
                 const index = (y * width + x) * 4
                 const r = imageData.data[index]
                 const g = imageData.data[index + 1]
                 const b = imageData.data[index + 2]
                 const a = imageData.data[index + 3]
-
-                if (a === 0)
-                    return null
-
+                if (a === 0) return null
                 const toHex = (n: number) => n.toString(16).padStart(2, '0')
                 return `#${toHex(r)}${toHex(g)}${toHex(b)}`
             },
 
             getCurrentColor: () => currentColor,
+            setCurrentColor: (color: string) => setColor(color),
 
-            setCurrentColor: (color: string) => {
-                setColor(color)
-            },
-
-            getSnapshot: () => {
-                return new Uint8ClampedArray(imageData.data);
-            },
-
+            getSnapshot: () => new Uint8ClampedArray(imageData.data),
             restoreSnapshot: (snapshot: Uint8ClampedArray) => {
                 imageData.data.set(snapshot);
             },
+            
+            refresh: () => renderCanvas(pixelSize),
 
-            refresh: () => {
-                renderCanvas(pixelSize)
+            // ✅ IL MANQUAIT CETTE FONCTION POUR LE MOUSE UP :
+            saveState: () => {
+                updateFrameImageData(currentFrameIndex, currentLayer.id, imageData)
             }
         }
     }
 
+    // --- LE USE EFFECT NETTOYÉ ---
     useEffect(() => {
         const displayCanvas = displayCanvasRef.current
-        if (!displayCanvas)
-            return
+        if (!displayCanvas) return
 
         const handleMouseDown = (e: MouseEvent) => {
             const coords = mouseToCanvas(e.clientX, e.clientY)
-            if (!coords)
-                return
+            if (!coords) return // Le clic initial doit être dans le canvas
 
             setIsDrawing(true)
             const tool = getTool(currentTool)
@@ -127,21 +120,21 @@ function Canvas() {
         }
 
         const handleMouseMove = (e: MouseEvent) => {
+            if (!isDrawing) return
+            
             const coords = mouseToCanvas(e.clientX, e.clientY)
-            if (!coords)
-                return
+            if (!coords) return
 
-            if (isDrawing) {
-                const tool = getTool(currentTool)
-                const context = createToolContext()
-                tool.onMouseMove(coords.x, coords.y, context)
-            }
+            const tool = getTool(currentTool)
+            const context = createToolContext()
+            tool.onMouseMove(coords.x, coords.y, context)
         }
 
         const handleMouseUp = (e: MouseEvent) => {
+            if (!isDrawing) return
+            
             const coords = mouseToCanvas(e.clientX, e.clientY)
-            if (!coords)
-                return
+            if (!coords) return
 
             setIsDrawing(false)
             const tool = getTool(currentTool)
@@ -149,26 +142,18 @@ function Canvas() {
             tool.onMouseUp(coords.x, coords.y, context)
         }
 
-        const handleMouseLeave = () => {
-            const tool = getTool(currentTool)
-            if (tool.onMouseLeave) {
-                 const context = createToolContext()
-                 tool.onMouseLeave(context)
-            }
-        }
+        // ✅ ON A SUPPRIMÉ HANDLE MOUSE LEAVE ET SES ÉCOUTEURS
 
         displayCanvas.addEventListener('mousedown', handleMouseDown)
-        displayCanvas.addEventListener('mousemove', handleMouseMove)
-        displayCanvas.addEventListener('mouseup', handleMouseUp)
-        displayCanvas.addEventListener('mouseleave', handleMouseLeave)
+        window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('mouseup', handleMouseUp)
 
         return () => {
             displayCanvas.removeEventListener('mousedown', handleMouseDown)
-            displayCanvas.removeEventListener('mousemove', handleMouseMove)
-            displayCanvas.removeEventListener('mouseup', handleMouseUp)
-            displayCanvas.removeEventListener('mouseleave', handleMouseLeave)
+            window.removeEventListener('mousemove', handleMouseMove)
+            window.removeEventListener('mouseup', handleMouseUp)
         }
-    }, [isDrawing, currentTool, currentColor, currentFrameIndex, currentLayerIndex, pixelSize, myZoom, mousePos])
+    },[isDrawing, currentTool, currentColor, currentFrameIndex, currentLayerIndex, pixelSize, myZoom, mousePos])
 
     useEffect(() => {
         const bufferCanvas = bufferCanvasRef.current

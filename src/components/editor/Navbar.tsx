@@ -12,7 +12,7 @@ function Navbar() {
         if (!ctx) return
 
         const currentFrame = frames[currentFrameIndex]
-        
+
         ctx.fillStyle = config.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         [...layers].reverse().forEach(layer => {
@@ -23,7 +23,6 @@ function Navbar() {
                     tempCanvas.width = config.width
                     tempCanvas.height = config.height
                     tempCanvas.getContext('2d')?.putImageData(imgData, 0, 0)
-                    
                     ctx.globalAlpha = layer.opacity
                     ctx.drawImage(tempCanvas, 0, 0)
                 }
