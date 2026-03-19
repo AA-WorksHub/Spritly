@@ -25,21 +25,28 @@ function EditorPage() {
     }, [undo, redo])
 
     return (
-        <div className="h-screen w-screen flex flex-col bg-gray-900 text-gray-300 overflow-hidden">
-            <Navbar />
-            
-            <div className="flex-1 flex overflow-hidden">
-                <Toolbar />
-                
-                {/* Zone centrale : Canvas + Timeline */}
-                <div className="flex-1 flex flex-col min-w-0">
-                    <div className="flex-1 relative bg-[#2a2a2a] overflow-hidden shadow-inner flex flex-col">
-                        <Canvas />
-                    </div>
-                    <Timeline />
-                </div>
+        <div className="h-screen w-screen flex flex-col bg-slate-900 text-slate-300 relative overflow-hidden">
+            {/* Décoration d'arrière plan inspirée de la HomePage */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none z-0"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] opacity-10 bg-blue-500 blur-[120px] rounded-full pointer-events-none z-0"></div>
 
-                <LayersPanel />
+            {/* Contenu de l'éditeur (au dessus du fond) */}
+            <div className="relative z-10 flex flex-col h-full w-full">
+                <Navbar />
+                
+                <div className="flex-1 flex overflow-hidden">
+                    <Toolbar />
+                    
+                    {/* Zone centrale : Canvas + Timeline */}
+                    <div className="flex-1 flex flex-col min-w-0">
+                        <div className="flex-1 relative overflow-hidden flex flex-col z-0">
+                            <Canvas />
+                        </div>
+                        <Timeline />
+                    </div>
+
+                    <LayersPanel />
+                </div>
             </div>
         </div>
     )

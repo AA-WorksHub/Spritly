@@ -6,42 +6,42 @@ function LayersPanel() {
     const { layers, currentLayerIndex, setCurrentLayer, addLayer, deleteLayer, toggleLayerVisibility } = useProjectStore()
 
     return (
-        <div className="w-64 bg-gray-800 border-l border-gray-700 flex flex-col shrink-0 z-10 h-full">
+        <div className="w-72 bg-slate-900/80 backdrop-blur-md border-l border-slate-800 flex flex-col shrink-0 z-20 shadow-[-4px_0_20px_rgba(0,0,0,0.2)] h-full">
             <AnimationPreview />
-            <div className="h-10 px-3 bg-gray-900 flex items-center justify-between border-b border-gray-700 mt-0">
-                <div className="flex items-center gap-2 text-gray-400">
-                    <Layers size={16} />
+            <div className="h-10 px-4 bg-slate-900/50 flex items-center justify-between border-y border-slate-800 mt-0">
+                <div className="flex items-center gap-2 text-slate-300">
+                    <Layers size={16} className="text-blue-400" />
                     <span className="text-xs font-bold uppercase tracking-wider">Calques</span>
                 </div>
-                <button onClick={addLayer} className="text-gray-400 hover:text-white p-1 hover:bg-gray-700 rounded" title="Nouveau calque">
+                <button onClick={addLayer} className="text-slate-400 hover:text-white p-1.5 hover:bg-blue-600 rounded-md transition-colors" title="Nouveau calque">
                     <Plus size={16} />
                 </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1 min-h-0">
+            <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 min-h-0">
                 {layers.map((layer, index) => (
                     <div 
                         key={layer.id}
                         onClick={() => setCurrentLayer(index)}
-                        className={`group flex items-center gap-2 p-2 rounded text-sm cursor-pointer select-none border border-transparent ${
+                        className={`group flex items-center gap-3 p-2.5 rounded-lg text-sm cursor-pointer select-none border transition-all duration-200 ${
                             index === currentLayerIndex
-                            ? 'bg-blue-600/20 border-blue-600/50 text-white'
-                            : 'hover:bg-gray-700 text-gray-300'
+                            ? 'bg-blue-500/15 border-blue-500/30 text-white shadow-inner'
+                            : 'bg-slate-800/50 border-slate-700/50 hover:bg-slate-800 hover:border-slate-600 text-slate-300'
                         }`}
                     >
                         <button
                             onClick={(e) => { e.stopPropagation(); toggleLayerVisibility(layer.id) }}
-                            className={`w-6 flex justify-center hover:text-white ${layer.visible ? 'text-gray-300' : 'text-gray-600'}`}
+                            className={`w-6 flex justify-center transition-colors ${layer.visible ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-400'}`}
                         >
-                            {layer.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+                            {layer.visible ? <Eye size={18} /> : <EyeOff size={18} />}
                         </button>
                         <span className="flex-1 truncate font-medium">{layer.name}</span>
                         <button
                             onClick={(e) => { e.stopPropagation(); deleteLayer(layer.id) }}
-                            className="text-gray-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                            className="text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all p-1.5 rounded hover:bg-slate-700/50"
                             title="Supprimer le calque"
                         >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} />
                         </button>
                     </div>
                 ))}

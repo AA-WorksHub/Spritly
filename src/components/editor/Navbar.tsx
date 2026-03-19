@@ -1,28 +1,23 @@
 import { useProjectStore } from '../../store/useProjectStore'
 import { Link } from 'react-router-dom'
+import { Download } from 'lucide-react'
 
 function Navbar() {
     const { config, frames, layers } = useProjectStore()
 
     const handleExport = () => {
         const canvas = document.createElement('canvas')
-        
-        // La largeur du canvas devient la largeur d'une frame multipliée par le nombre total de frames
         canvas.width = config.width * frames.length
         canvas.height = config.height
         
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        // Remplit le fond pour toute la sprite sheet
         ctx.fillStyle = config.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Boucle sur chaque frame pour les dessiner côte à côte
         frames.forEach((frame, frameIndex) => {
-            // Décalage horizontal pour la frame courante
             const offsetX = frameIndex * config.width;
-
             [...layers].reverse().forEach(layer => {
                 if (layer.visible) {
                     const imgData = frame.layers.get(layer.id)
@@ -33,7 +28,6 @@ function Navbar() {
                         tempCanvas.getContext('2d')?.putImageData(imgData, 0, 0)
                         
                         ctx.globalAlpha = layer.opacity
-                        // On dessine le contenu de la frame au bon endroit sur l'axe X
                         ctx.drawImage(tempCanvas, offsetX, 0)
                     }
                 }
@@ -47,15 +41,22 @@ function Navbar() {
     }
 
     return (
-        <div className="bg-gray-900 border-b border-gray-700 text-white px-4 h-12 flex items-center justify-between shrink-0 z-20">
-            <div className="flex items-center gap-4">
-                <Link to="/" className="text-xl font-bold text-blue-400 hover:text-blue-300">Spritly</Link>
-                <span className="text-xs bg-gray-800 px-2 py-1 rounded text-gray-400">
-                    {config.width}x{config.height}px
+        <div className="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 text-slate-100 px-6 h-14 flex items-center justify-between shrink-0 z-20">
+            <div className="flex items-center gap-6">
+                <Link to="/" className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300 hover:opacity-80 transition-opacity">
+                    Spritly
+                </Link>
+                <div className="h-4 w-px bg-slate-700"></div>
+                <span className="text-xs bg-slate-800/50 border border-slate-700 px-2 py-1.5 rounded-md text-slate-300 font-medium">
+                    {config.width} × {config.height} px
                 </span>
             </div>
-            <div className="flex gap-2">
-                <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-500 text-xs px-3 py-1.5 rounded font-medium transition-colors">
+            <div className="flex gap-3">
+                <button 
+                    onClick={handleExport} 
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded-lg font-bold transition-all hover:scale-105 shadow-lg shadow-blue-500/25"
+                >
+                    <Download size={16} />
                     Export Sprite Sheet
                 </button>
             </div>
