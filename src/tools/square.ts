@@ -47,5 +47,9 @@ export const squareTool: Tool = {
         context.saveState();
         startPos = null;
         canvasSnapshot = null;
-    }
-};
+    },
+
+    onMouseLeave() {
+        startPos = null;
+    },
+}
