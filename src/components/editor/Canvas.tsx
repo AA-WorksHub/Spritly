@@ -204,26 +204,46 @@ function Canvas() {
         if (!displayContext || !bufferContext)
             return
 
+        // 1. On nettoie le buffer
         bufferContext.clearRect(0, 0, width, height)
         const currentFrame = frames[currentFrameIndex]
+
         if (currentFrame) {
-            layers.forEach(layer => {
-                if (layer.visible) {
-                    const imageData = currentFrame.layers.get(layer.id)
-                    if (imageData)
-                        bufferContext.putImageData(imageData, 0, 0)
-                }
-            })
+            // Création d'un canvas temporaire pour gérer la superposition (alpha blending)
+            const tempCanvas = document.createElement('canvas')
+            tempCanvas.width = width
+            tempCanvas.height = height
+            const tempCtx = tempCanvas.getContext('2d')
+
+            if (tempCtx) {
+                // 2. On inverse les calques pour dessiner du bas vers le haut
+                const layersToDraw = [...layers].reverse()
+
+                layersToDraw.forEach(layer => {
+                    if (layer.visible) {
+                        const imageData = currentFrame.layers.get(layer.id)
+                        if (imageData) {
+                            // A. On met les pixels sur le canvas temporaire
+                            tempCtx.putImageData(imageData, 0, 0)
+                            // B. On DESSINE (fusionne) sur le buffer
+                            bufferContext.drawImage(tempCanvas, 0, 0)
+                        }
+                    }
+                })
+            }
         }
 
         displayContext.setTransform(1, 0, 0, 1, 0, 0)
+        
+        // 3. AU LIEU DE DESSINER EN BLANC, ON EFFACE TOUT (TRANSPARENT)
+        displayContext.clearRect(0, 0, displayCanvas.width, displayCanvas.height)
+
+        // Transformations (Zoom / Pan)
         displayContext.translate(mousePos.x, mousePos.y)
         displayContext.scale(myZoom, myZoom)
         displayContext.translate(-mousePos.x, -mousePos.y)
 
-        displayContext.fillStyle = 'white'
-        displayContext.fillRect(0, 0, displayCanvas.width, displayCanvas.height)
-
+        // 4. On dessine le buffer final composé sur l'écran
         displayContext.imageSmoothingEnabled = false
         displayContext.drawImage(bufferCanvas, 0, 0, width, height, 0, 0, displayCanvas.width, displayCanvas.height)
 
@@ -254,9 +274,12 @@ function Canvas() {
     }, [myZoom])
 
     return (
-        <div className="flex-1 min-w-0 min-h-0bg-gray-100 flex items-center justify-center" ref={containerRef}>
+        <div 
+            className="flex-1 min-w-0 min-h-0 bg-gray-100 flex items-center justify-center bg-[url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABtJREFUeNpiZGBqaGQACompTmQAURwYCBgAAAIMAAI3Xyl9AAAAAElFTkSuQmCC')]" 
+            ref={containerRef}
+        >
             <canvas ref={bufferCanvasRef} style={{ display: 'none' }} />
-            <canvas ref={displayCanvasRef} style={{ border: '1px solid black' }} />
+            <canvas ref={displayCanvasRef} className="bg-transparent shadow-lg" style={{ border: '1px solid black' }} />
         </div>
     )
 }
