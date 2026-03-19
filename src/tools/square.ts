@@ -2,6 +2,7 @@ import type { Tool, ToolContext } from "./types"
 
 let startPos: { x: number, y: number } | null = null;
 let canvasSnapshot: any = null;
+
 const drawRect = (x0: number, y0: number, x1: number, y1: number, color: string, context: ToolContext) => {
     const startX = Math.min(x0, x1);
     const endX = Math.max(x0, x1);
@@ -46,8 +47,5 @@ export const squareTool: Tool = {
         context.saveState();
         startPos = null;
         canvasSnapshot = null;
-    },
-git 
-        startPos = null;
     }
-}
+};

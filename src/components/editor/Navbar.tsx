@@ -2,35 +2,46 @@ import { useProjectStore } from '../../store/useProjectStore'
 import { Link } from 'react-router-dom'
 
 function Navbar() {
-    const { config, frames, layers, currentFrameIndex } = useProjectStore()
+    const { config, frames, layers } = useProjectStore()
 
     const handleExport = () => {
         const canvas = document.createElement('canvas')
-        canvas.width = config.width
+        
+        // La largeur du canvas devient la largeur d'une frame multipliée par le nombre total de frames
+        canvas.width = config.width * frames.length
         canvas.height = config.height
+        
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
-        const currentFrame = frames[currentFrameIndex]
-
+        // Remplit le fond pour toute la sprite sheet
         ctx.fillStyle = config.backgroundColor
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        [...layers].reverse().forEach(layer => {
-            if (layer.visible) {
-                const imgData = currentFrame.layers.get(layer.id)
-                if (imgData) {
-                    const tempCanvas = document.createElement('canvas')
-                    tempCanvas.width = config.width
-                    tempCanvas.height = config.height
-                    tempCanvas.getContext('2d')?.putImageData(imgData, 0, 0)
-                    ctx.globalAlpha = layer.opacity
-                    ctx.drawImage(tempCanvas, 0, 0)
+
+        // Boucle sur chaque frame pour les dessiner côte à côte
+        frames.forEach((frame, frameIndex) => {
+            // Décalage horizontal pour la frame courante
+            const offsetX = frameIndex * config.width;
+
+            [...layers].reverse().forEach(layer => {
+                if (layer.visible) {
+                    const imgData = frame.layers.get(layer.id)
+                    if (imgData) {
+                        const tempCanvas = document.createElement('canvas')
+                        tempCanvas.width = config.width
+                        tempCanvas.height = config.height
+                        tempCanvas.getContext('2d')?.putImageData(imgData, 0, 0)
+                        
+                        ctx.globalAlpha = layer.opacity
+                        // On dessine le contenu de la frame au bon endroit sur l'axe X
+                        ctx.drawImage(tempCanvas, offsetX, 0)
+                    }
                 }
-            }
-        })
+            })
+        });
 
         const link = document.createElement('a')
-        link.download = 'spritly-export.png'
+        link.download = 'spritly-spritesheet.png'
         link.href = canvas.toDataURL('image/png')
         link.click()
     }
@@ -45,7 +56,7 @@ function Navbar() {
             </div>
             <div className="flex gap-2">
                 <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-500 text-xs px-3 py-1.5 rounded font-medium transition-colors">
-                    Export PNG
+                    Export Sprite Sheet
                 </button>
             </div>
         </div>
