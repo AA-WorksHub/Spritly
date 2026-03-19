@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import type { Project, Frame, Layer, ToolType, HistoryState } from '../types'
 
 const DEFAULT_CONFIG = { width: 32, height: 32, fps: 12, backgroundColor: '#ffffff' }
+
 const createInitialData = () => {
     const layerId = crypto.randomUUID()
     const layer: Layer = {
@@ -58,6 +59,7 @@ interface ProjectStore extends Project {
   undo: () => void
   redo: () => void
 
+  updateProjectSize: (width: number, height: number) => void
   resetProject: () => void
 }
 
@@ -126,6 +128,37 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     }
   }),
 
+  updateProjectSize: (newWidth, newHeight) => {
+    set((state) => {
+      const updatedFrames = state.frames.map(frame => {
+        const newLayers = new Map<string, ImageData>()
+        frame.layers.forEach((oldData, layerId) => {
+          const newData = new ImageData(newWidth, newHeight)
+          // Copier les anciens pixels dans le nouveau format
+          for (let y = 0; y < Math.min(state.config.height, newHeight); y++) {
+            for (let x = 0; x < Math.min(state.config.width, newWidth); x++) {
+              const oldIdx = (y * state.config.width + x) * 4
+              const newIdx = (y * newWidth + x) * 4
+              newData.data[newIdx] = oldData.data[oldIdx]
+              newData.data[newIdx + 1] = oldData.data[oldIdx + 1]
+              newData.data[newIdx + 2] = oldData.data[oldIdx + 2]
+              newData.data[newIdx + 3] = oldData.data[oldIdx + 3]
+            }
+          }
+          newLayers.set(layerId, newData)
+        })
+        return { ...frame, layers: newLayers }
+      })
+
+      return {
+        config: { ...state.config, width: newWidth, height: newHeight },
+        frames: updatedFrames,
+        history: [], // Reset l'histoire pour éviter les erreurs de dimensions
+        historyIndex: -1
+      }
+    })
+  },
+
   addLayer: () => {
     get().saveToHistory()
     set((state) => {
@@ -137,8 +170,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       }
       const updatedFrames = state.frames.map(frame => {
         const imageData = new ImageData(state.config.width, state.config.height)
-        frame.layers.set(newLayer.id, imageData)
-        return frame
+        const newLayerMap = new Map(frame.layers)
+        newLayerMap.set(newLayer.id, imageData)
+        return { ...frame, layers: newLayerMap }
       })
       return {
         layers: [newLayer, ...state.layers],
@@ -154,8 +188,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
         if (state.layers.length <= 1) return state
         const newLayers = state.layers.filter(l => l.id !== id)
         const updatedFrames = state.frames.map(frame => {
-            frame.layers.delete(id)
-            return frame
+            const newLayerMap = new Map(frame.layers)
+            newLayerMap.delete(id)
+            return { ...frame, layers: newLayerMap }
         })
         return { 
             layers: newLayers, 
@@ -234,7 +269,6 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
 
   resetProject: () => {
       const { layer, frame } = createInitialData()
-      
       set({
           ...initialState,
           layers: [layer],
@@ -242,15 +276,5 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
           history: [],
           historyIndex: -1
       })
-      
-      set(s => ({ 
-          history: [{ 
-              frames: cloneFrames(s.frames, DEFAULT_CONFIG.width, DEFAULT_CONFIG.height), 
-              layers: s.layers, 
-              currentFrameIndex: 0, 
-              currentLayerIndex: 0 
-          }], 
-          historyIndex: 0 
-      }))
   }
 }))
