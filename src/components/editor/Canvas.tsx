@@ -53,15 +53,11 @@ function Canvas() {
                 const r = parseInt(hex.substring(0, 2), 16)
                 const g = parseInt(hex.substring(2, 4), 16)
                 const b = parseInt(hex.substring(4, 6), 16)
-                
                 const index = (y * width + x) * 4
                 imageData.data[index] = r
                 imageData.data[index + 1] = g
                 imageData.data[index + 2] = b
                 imageData.data[index + 3] = 255
-
-                // ASTUCE OPTIMISATION : Tu peux commenter la ligne ci-dessous si ton dessin lag trop. 
-                // Le refresh() et le saveState() s'occuperont de mettre à jour visuellement !
                 updateFrameImageData(currentFrameIndex, currentLayer.id, imageData)
             },
 
@@ -96,22 +92,19 @@ function Canvas() {
             },
             
             refresh: () => renderCanvas(pixelSize),
-
-            // ✅ IL MANQUAIT CETTE FONCTION POUR LE MOUSE UP :
             saveState: () => {
                 updateFrameImageData(currentFrameIndex, currentLayer.id, imageData)
             }
         }
     }
 
-    // --- LE USE EFFECT NETTOYÉ ---
     useEffect(() => {
         const displayCanvas = displayCanvasRef.current
         if (!displayCanvas) return
 
         const handleMouseDown = (e: MouseEvent) => {
             const coords = mouseToCanvas(e.clientX, e.clientY)
-            if (!coords) return // Le clic initial doit être dans le canvas
+            if (!coords) return
 
             setIsDrawing(true)
             const tool = getTool(currentTool)
@@ -141,8 +134,6 @@ function Canvas() {
             const context = createToolContext()
             tool.onMouseUp(coords.x, coords.y, context)
         }
-
-        // ✅ ON A SUPPRIMÉ HANDLE MOUSE LEAVE ET SES ÉCOUTEURS
 
         displayCanvas.addEventListener('mousedown', handleMouseDown)
         window.addEventListener('mousemove', handleMouseMove)
